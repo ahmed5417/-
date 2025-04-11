@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="حاسبتي الذكية">
+    <meta name="theme-color" content="#4CAF50">
+    <meta name="description" content="تطبيق حاسبة ذكية مع وضعي GOLD و BTC">
+    
+    <!-- أيقونات iOS -->
+    <link rel="apple-touch-icon" href="icons/icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="icons/icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="icons/icon-192x192.png">
+    <link rel="apple-touch-icon" sizes="167x167" href="icons/icon-152x152.png">
+    
+    <!-- شاشة البداية -->
+    <link rel="apple-touch-startup-image" href="icons/icon-512x512.png">
+    
+    <!-- ملف المانيفست -->
+    <link rel="manifest" href="manifest.json">
+    
+    <title>لوحة التحكم - حاسبتي الذكية</title>
+    <style>
+        * {
+            -webkit-tap-highlight-color: transparent;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
+            overscroll-behavior: none;
+        }
+        
+        .admin-container {
+            background-color: white;
+            border-radius: 20px;
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+            overflow: hidden;
+            padding: 30px;
+        }
+        
+        .app-logo {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .app-logo img {
+            width: 60px;
+            height: 60px;
+            border-radius: 15px;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-top: 0;
+            margin-bottom: 30px;
+            font-size: 1.8em;
+        }
+        
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 20px;
+        }
+        
+        .tab {
+            flex: 1;
+            padding: 15px;
+            text-align: center;
+            background-color: #f8f8f8;
+            border: none;
+            font-weight: bold;
+            font-size: 1em;
+            transition: background-color 0.3s, color 0.3s;
+            cursor: pointer;
+        }
+        
+        .tab.active {
+            background-color: #4CAF50;
+            color: white;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #555;
+        }
+        
+        input[type="text"],
+        input[type="password"],
+        input[type="date"] {
+            width: 100%;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+            direction: rtl;
+        }
+        
+        input[type="text"]:focus,
+        input[type="password"]:focus,
+        input[type="date"]:focus {
+            border-color: #4CAF50;
+            outline: none;
+        }
+        
+        .action-btn {
+            width: 100%;
+            padding: 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-bottom: 10px;
+        }
+        
+        .action-btn:active {
+            background-color: #3d8b40;
+        }
+        
+        .action-btn.delete {
+            background-color: #e74c3c;
+        }
+        
+        .action-btn.delete:active {
+            background-color: #c0392b;
+        }
+        
+        .message {
+            text-align: center;
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 10px;
+            font-size: 0.9em;
+            display: none;
+        }
+        
+        .success-message {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+        }
+        
+        .error-message {
+            background-color: #ffebee;
+            color: #c62828;
+        }
+        
+        .user-list, .subscription-list {
+            margin-top: 20px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .list-header {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr auto;
+            background-color: #f8f8f8;
+            padding: 15px;
+            font-weight: bold;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .list-item {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr auto;
+            padding: 15px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .list-item:last-child {
+            border-bottom: none;
+        }
+        
+        .list-item button {
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+        
+        .back-btn {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: #4CAF50;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        
+        /* تحسينات iOS */
+        @supports (-webkit-touch-callout: none) {
+            body {
+                padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <div class="app-logo">
+            <img src="icons/icon-152x152.png" alt="شعار التطبيق">
+        </div>
+        <h1>لوحة التحكم</h1>
+        
+        <div class="tabs">
+            <button class="tab active" onclick="showTab('users')">المستخدمين</button>
+            <button class="tab" onclick="showTab('subscriptions')">الاشتراكات</button>
+        </div>
+        
+        <div id="usersTab" class="tab-content active">
+            <h2>إدارة المستخدمين</h2>
+            
+            <div class="form-group">
+                <label for="newUsername">اسم المستخدم</label>
+                <input type="text" id="newUsername" placeholder="أدخل اسم المستخدم">
+            </div>
+            
+            <div class="form-group">
+                <label for="newPassword">كلمة المرور</label>
+                <input type="password" id="newPassword" placeholder="أدخل كلمة المرور">
+            </div>
+            
+            <button class="action-btn" id="addUserBtn">إضافة مستخدم</button>
+            
+            <div id="userMessage" class="message"></div>
+            
+            <h3>قائمة المستخدمين</h3>
+            <div class="user-list">
+                <div class="list-header">
+                    <div>اسم المستخدم</div>
+                    <div>نوع الحساب</div>
+                    <div>حالة الاشتراك</div>
+                    <div>إجراءات</div>
+                </div>
+                <div id="userListContainer"></div>
+            </div>
+        </div>
+        
+        <div id="subscriptionsTab" class="tab-content">
+            <h2>إدارة الاشتراكات</h2>
+            
+            <div class="form-group">
+                <label for="subscriptionUsername">اسم المستخدم</label>
+                <input type="text" id="subscriptionUsername" placeholder="أدخل اسم المستخدم">
+            </div>
+            
+            <div class="form-group">
+                <label for="expiryDate">تاريخ انتهاء الاشتراك</label>
+                <input type="date" id="expiryDate">
+            </div>
+            
+            <button class="action-btn" id="addSubscriptionBtn">إضافة/تجديد اشتراك</button>
+            
+            <div id="subscriptionMessage" class="message"></div>
+            
+            <h3>قائمة الاشتراكات</h3>
+            <div class="subscription-list">
+                <div class="list-header">
+                    <div>اسم المستخدم</div>
+                    <div>تاريخ الانتهاء</div>
+                    <div>الحالة</div>
+                    <div>إجراءات</div>
+                </div>
+                <div id="subscriptionListContainer"></div>
+            </div>
+        </div>
+        
+        <a href="calculator.html" class="back-btn">العودة إلى التطبيق</a>
+    </div>
+
+    <script src="database.js"></script>
+    <script>
+        // تهيئة قاعدة البيانات
+        let db;
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            // التحقق من صلاحيات المسؤول
+            checkAdminAccess();
+            
+            // إنشاء كائن قاعدة البيانات
+            db = new Database();
+            
+            // إضافة مستمعي الأحداث
+            document.getElementById('addUserBtn').addEventListener('click', addUser);
+            document.getElementById('addSubscriptionBtn').addEventListener('click', addSubscription);
+            
+            // تحميل بيانات المستخدمين والاشتراكات
+            loadUsers();
+            loadSubscriptions();
+            
+            // تعيين تاريخ افتراضي لانتهاء الاشتراك (شهر من اليوم)
+            const defaultExpiryDate = new Date();
+            defaultExpiryDate.setMonth(defaultExpiryDate.getMonth() + 1);
+            document.getElementById('expiryDate').valueAsDate = defaultExpiryDate;
+            
+            // تسجيل Service Worker
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('service-worker.js')
+                    .then(reg => console.log('تم تسجيل Service Worker', reg))
+                    .catch(err => console.log('فشل تسجيل Service Worker', err));
+            }
+        });
+        
+        // التحقق من صلاحيات المسؤول
+        function checkAdminAccess() {
+            const session = JSON.parse(localStorage.getItem('session'));
+            if (!session || !session.isAdmin) {
+                // إعادة التوجيه إلى صفحة تسجيل الدخول
+                window.location.href = 'login.html';
+            }
+        }
+        
+        // عرض التبويب المحدد
+        function showTab(tabName) {
+            // إخفاء جميع التبويبات
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // إزالة التنشيط من جميع أزرار التبويب
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // تنشيط التبويب المحدد
+            document.getElementById(tabName + 'Tab').classList.add('active');
+            
+            // تنشيط زر التبويب المحدد
+            document.querySelectorAll('.tab').forEach(tab => {
+                if (tab.textContent.includes(tabName === 'users' ? 'المستخدمين' : 'الاشتراكات')) {
+                    tab.classList.add('active');
+                }
+            });
+        }
+        
+        // إضافة مستخدم جديد
+        function addUser() {
+            const username = document.getElementById('newUsername').value.trim();
+            const password = document.getElementById('newPassword').value.trim();
+            const messageElement = document.getElementById('userMessage');
+            
+            // التحقق من إدخال البيانات
+            if (!username || !password) {
+                showMessage(messageElement, 'يرجى إدخال اسم المستخدم وكلمة المرور', 'error');
+                return;
+            }
+            
+            // التحقق من وجود المستخدم
+            db.getUser(username).then(existingUser => {
+                if (existingUser) {
+                    showMessage(messageElement, 'اسم المستخدم موجود بالفعل', 'error');
+                } else {
+                    // إضافة المستخدم
+                    db.addUser({
+                        username: username,
+                        password: password,
+                        isAdmin: false
+                    }).then(() => {
+                        showMessage(messageElement, 'تم إضافة المستخدم بنجاح', 'success');
+                        
+                        // مسح حقول الإدخال
+                        document.getElementById('newUsername').value = '';
+                        document.getElementById('newPassword').value = '';
+                        
+                        // إعادة تحميل قائمة المستخدمين
+                        loadUsers();
+                    }).catch(error => {
+                        showMessage(messageElement, 'حدث خطأ أثناء إضافة المستخدم', 'error');
+                        console.error('خطأ في إضافة المستخدم:', error);
+                    });
+                }
+            });
+        }
+        
+        // إضافة/تجديد اشتراك
+        function addSubscription() {
+            const username = document.getElementById('subscriptionUsername').value.trim();
+            const expiryDate = document.getElementById('expiryDate').value;
+            const messageElement = document.getElementById('subscriptionMessage');
+            
+            // التحقق من إدخال البيانات
+            if (!username || !expiryDate) {
+                showMessage(messageElement, 'يرجى إدخال اسم المستخدم وتاريخ انتهاء الاشتراك', 'error');
+                return;
+            }
+            
+            // التحقق من وجود المستخدم
+            db.getUser(username).then(existingUser => {
+                if (!existingUser) {
+                    showMessage(messageElement, 'المستخدم غير موجود', 'error');
+                } else {
+                    // إضافة/تحديث الاشتراك
+                    db.addSubscription({
+                        username: username,
+                        expiryDate: new Date(expiryDate).toISOString()
+                    }).then(() => {
+                        showMessage(messageElement, 'تم إضافة/تجديد الاشتراك بنجاح', 'success');
+                        
+                        // مسح حقل اسم المستخدم
+                        document.getElementById('subscriptionUsername').value = '';
+                        
+                        // إعادة تحميل قائمة الاشتراكات
+                        loadSubscriptions();
+                    }).catch(error => {
+                        showMessage(messageElement, 'حدث خطأ أثناء إضافة/تجديد الاشتراك', 'error');
+                        console.error('خطأ في إضافة/تجديد الاشتراك:', error);
+                    });
+                }
+            });
+        }
+        
+        // تحميل قائمة المستخدمين
+        function loadUsers() {
+            const container = document.getElementById('userListContainer');
+            container.innerHTML = '';
+            
+            db.getAllUsers().then(users => {
+                if (users.length === 0) {
+                    container.innerHTML = '<div class="list-item">لا يوجد مستخدمين</div>';
+                    return;
+                }
+                
+                users.forEach(user => {
+                    // تخطي المستخدم المسؤول
+                    if (user.username === 'admin') return;
+                    
+                    // التحقق من حالة الاشتراك
+                    db.checkSubscriptionValidity(user.username).then(isValid => {
+                        const listItem = document.createElement('div');
+                        listItem.className = 'list-item';
+                        
+                        listItem.innerHTML = `
+          
+(Content truncated due to size limit. Use line ranges to read in chunks)
